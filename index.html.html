@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WattMart — Clean Energy Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f0d;
+    --surface: #111a14;
+    --surface2: #162019;
+    --border: #1e2d22;
+    --green: #2ecc71;
+    --green-dim: #1a7a42;
+    --green-glow: rgba(46,204,113,0.12);
+    --amber: #f0a500;
+    --amber-dim: rgba(240,165,0,0.15);
+    --red: #e74c3c;
+    --text: #e8f0ea;
+    --text-dim: #7a9980;
+    --text-muted: #4a6650;
+    --verified: #2ecc71;
+    --radius: 10px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--green);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--text-dim); font-weight: 400; font-size: 12px; margin-left: 8px; }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    font-family: var(--font-body);
+  }
+  .nav-tab:hover { color: var(--text); background: var(--surface2); }
+  .nav-tab.active { color: var(--green); background: var(--green-glow); }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .role-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .role-buyer { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid var(--green-dim); }
+  .role-seller { background: rgba(240,165,0,0.15); color: var(--amber); border: 1px solid rgba(240,165,0,0.4); }
+
+  .cart-btn {
+    background: var(--green);
+    color: #000;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.15s;
+  }
+  .cart-btn:hover { opacity: 0.85; }
+  .cart-count {
+    background: #000;
+    color: var(--green);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* MARKETPLACE */
+  .marketplace-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+  }
+
+  .sidebar-title {
+    font-family: var(--font-head);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .filter-group { margin-bottom: 24px; }
+
+  .filter-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: all 0.15s;
+  }
+  .filter-item:hover, .filter-item.active {
+    color: var(--text);
+    background: var(--surface2);
+  }
+  .filter-item.active { color: var(--green); }
+  .filter-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  .price-range {
+    padding: 0 8px;
+  }
+  .price-range input[type=range] {
+    width: 100%;
+    accent-color: var(--green);
+    background: transparent;
+  }
+  .price-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .main-content {
+    padding: 24px 32px;
+  }
+
+  .search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .search-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--green-dim); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--green); color: #000; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-outline { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+  .btn-outline:hover { color: var(--text); border-color: var(--text-muted); }
+  .btn-amber { background: var(--amber); color: #000; }
+  .btn-amber:hover { opacity: 0.85; }
+  .btn-ghost { background: var(--surface2); color: var(--text-dim); }
+  .btn-ghost:hover { color: var(--text); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-danger { background: rgba(231,76,60,0.15); color: var(--red); border: 1px solid rgba(231,76,60,0.3); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .result-count { color: var(--text-muted); font-size: 13px; }
+
+  /* PRODUCT GRID */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .product-card:hover {
+    border-color: var(--green-dim);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .product-img {
+    height: 140px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-img-icon {
+    font-size: 48px;
+    opacity: 0.3;
+  }
+  .product-img-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(46,204,113,0.05) 0%, transparent 60%);
+  }
+
+  .verified-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(46,204,113,0.9);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .product-body { padding: 14px; }
+  .product-brand {
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .product-name {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .product-spec {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .product-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .product-price {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .product-price span { font-size: 11px; color: var(--text-muted); font-family: var(--font-body); font-weight: 400; }
+
+  .seller-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .seller-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: var(--green-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .seller-name { font-size: 12px; color: var(--text-dim); }
+  .star-rating { color: var(--amber); font-size: 11px; margin-left: auto; }
+
+  /* STOCK INDICATOR */
+  .stock-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+  }
+  .in-stock { background: var(--green); }
+  .low-stock { background: var(--amber); }
+  .out-stock { background: var(--red); }
+
+  /* DASHBOARD */
+  .dashboard-layout {
+    padding: 24px 32px;
+  }
+
+  .dashboard-header {
+    margin-bottom: 28px;
+  }
+  .dashboard-greeting {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .dashboard-title {
+    font-family: var(--font-head);
+    font-size: 26px;
+    font-weight: 800;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--green);
+    opacity: 0.5;
+  }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .stat-value { font-family: var(--font-head); font-size: 26px; font-weight: 700; }
+  .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .stat-up { color: var(--green); font-size: 12px; margin-top: 4px; }
+  .stat-down { color: var(--red); font-size: 12px; margin-top: 4px; }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .dash-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .dash-panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dash-panel-title { font-family: var(--font-head); font-size: 15px; font-weight: 700; }
+  .dash-panel-body { padding: 16px 20px; }
+
+  /* ORDER TABLE */
+  .order-table { width: 100%; border-collapse: collapse; }
+  .order-table th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    padding: 8px 0;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .order-table td {
+    padding: 10px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .order-table tr:last-child td { border-bottom: none; }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .status-pending { background: var(--amber-dim); color: var(--amber); }
+  .status-confirmed { background: rgba(46,204,113,0.1); color: var(--green); }
+  .status-transit { background: rgba(52,152,219,0.15); color: #3498db; }
+  .status-delivered { background: rgba(46,204,113,0.1); color: var(--green); }
+  .status-draft { background: var(--surface2); color: var(--text-muted); }
+  .status-rejected { background: rgba(231,76,60,0.1); color: var(--red); }
+  .status-awaiting-payment { background: rgba(155,89,182,0.15); color: #a855f7; border: 1px solid rgba(155,89,182,0.3); }
+  .status-payment-made { background: rgba(52,152,219,0.15); color: #3498db; border: 1px solid rgba(52,152,219,0.3); }
+
+  /* PAYMENT PANEL */
+  .payment-panel {
+    background: linear-gradient(135deg, rgba(155,89,182,0.08) 0%, rgba(46,204,113,0.05) 100%);
+    border: 1px solid rgba(155,89,182,0.25);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+  }
+  .payment-panel-title {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    color: #a855f7;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .payment-panel-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .bank-details-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .bank-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .bank-detail-row:last-child { border-bottom: none; }
+  .bank-detail-label { color: var(--text-muted); font-size: 12px; }
+  .bank-detail-value { font-weight: 600; color: var(--text); }
+  .bank-detail-value.amount { font-family: var(--font-head); font-size: 20px; color: var(--green); }
+  .copy-btn {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--text-muted); }
+  .payment-warning {
+    font-size: 12px;
+    color: var(--amber);
+    background: var(--amber-dim);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .payment-confirm-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .payment-confirm-btn:hover { opacity: 0.88; }
+  .btn-payment-received {
+    background: linear-gradient(135deg, #059669 0%, #2ecc71 100%);
+    color: #000;
+    border: none;
+    font-weight: 700;
+  }
+  .payment-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 16px 0;
+  }
+  .pt-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    position: relative;
+  }
+  .pt-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 24px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .pt-step.done::after { background: var(--green-dim); }
+  .pt-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .pt-step.done .pt-icon { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .pt-step.active .pt-icon { border-color: #a855f7; color: #a855f7; background: rgba(168,85,247,0.1); }
+  .pt-content { flex: 1; padding-top: 2px; }
+  .pt-label { font-size: 13px; font-weight: 600; }
+  .pt-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* NOTIFICATION */
+  .notification-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .notification-item:last-child { border-bottom: none; }
+  .notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .notif-text { font-size: 13px; color: var(--text-dim); line-height: 1.4; }
+  .notif-time { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  /* CART / PO */
+  .cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    padding: 24px 32px;
+  }
+
+  .cart-items { }
+  .cart-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .cart-item-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .cart-item-details { flex: 1; }
+  .cart-item-name { font-family: var(--font-head); font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .cart-item-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .qty-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qty-num { font-weight: 600; min-width: 24px; text-align: center; }
+  .cart-item-price {
+    text-align: right;
+  }
+  .cart-item-total { font-family: var(--font-head); font-size: 16px; font-weight: 700; }
+  .rfd-link {
+    font-size: 12px;
+    color: var(--amber);
+    cursor: pointer;
+    text-decoration: underline;
+    margin-top: 4px;
+  }
+
+  .seller-section-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .seller-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .order-summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: sticky;
+    top: 80px;
+  }
+  .summary-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .summary-line.total {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+
+  .logistics-selector {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .logistics-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .logistics-option.selected { border-color: var(--green); }
+  .logistics-option input[type=radio] { accent-color: var(--green); }
+  .logistics-name { font-weight: 600; font-size: 13px; }
+  .logistics-time { font-size: 12px; color: var(--text-muted); }
+  .logistics-cost { margin-left: auto; font-weight: 600; color: var(--green); font-size: 13px; }
+
+  /* PO MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 680px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+  .modal-close { cursor: pointer; color: var(--text-muted); font-size: 20px; background: none; border: none; color: var(--text-muted); }
+  .modal-body { padding: 24px; }
+
+  .po-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .po-ref { font-family: var(--font-head); font-size: 13px; color: var(--green); }
+  .po-date { font-size: 12px; color: var(--text-muted); }
+  .po-parties {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--surface2);
+    border-radius: 8px;
+  }
+  .po-party-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .po-party-name { font-weight: 600; margin-bottom: 2px; }
+  .po-party-meta { font-size: 12px; color: var(--text-muted); }
+
+  .po-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .po-table th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    padding: 8px;
+    text-align: left;
+    background: var(--surface2);
+  }
+  .po-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .po-totals {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .po-total-line { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+  .po-total-line.grand { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--text); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+  .po-terms { font-size: 12px; color: var(--text-muted); line-height: 1.6; padding: 12px; background: var(--amber-dim); border-radius: 6px; }
+
+  /* SELLER DASHBOARD */
+  .po-action-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .po-action-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .po-action-ref { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--green); }
+  .po-action-buyer { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+  .po-action-items { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+  .po-action-value { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+  .po-action-footer { display: flex; gap: 8px; margin-top: 12px; }
+
+  /* RFQ */
+  .rfq-layout { padding: 24px 32px; max-width: 900px; }
+  .rfq-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 24px;
+  }
+  .rfq-upload-zone:hover { border-color: var(--green-dim); background: var(--green-glow); }
+  .rfq-upload-icon { font-size: 40px; margin-bottom: 12px; }
+  .rfq-upload-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .rfq-upload-sub { font-size: 13px; color: var(--text-muted); }
+
+  .rfq-progress {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .progress-steps { display: flex; gap: 0; margin-bottom: 16px; }
+  .progress-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    padding-bottom: 20px;
+  }
+  .progress-step::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+  }
+  .progress-step:last-child::before { display: none; }
+  .progress-step.done::before { background: var(--green-dim); }
+  .step-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 6px;
+  }
+  .progress-step.done .step-circle { background: var(--green); border-color: var(--green); color: #000; }
+  .progress-step.current .step-circle { border-color: var(--green); color: var(--green); }
+  .step-label { font-size: 11px; color: var(--text-muted); }
+  .progress-step.done .step-label, .progress-step.current .step-label { color: var(--text-dim); }
+
+  .quote-results { }
+  .quote-line {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .quote-line-header {
+    padding: 12px 16px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .quote-line-num { font-size: 11px; color: var(--text-muted); }
+  .quote-line-product { font-family: var(--font-head); font-size: 14px; font-weight: 700; }
+  .quote-line-spec { font-size: 12px; color: var(--text-dim); margin-left: auto; }
+  .quote-options { padding: 8px 0; }
+  .quote-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .quote-option:hover { background: var(--surface2); }
+  .quote-option.selected { background: var(--green-glow); }
+  .quote-option input[type=radio] { accent-color: var(--green); }
+  .qo-seller { font-weight: 600; font-size: 13px; flex: 1; }
+  .qo-stars { color: var(--amber); font-size: 11px; }
+  .qo-price { font-family: var(--font-head); font-size: 15px; font-weight: 700; }
+  .qo-delivery { font-size: 12px; color: var(--text-muted); }
+  .qo-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; }
+  .qo-best { background: var(--green-glow); color: var(--green); }
+
+  /* CREDIT */
+  .credit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .credit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .credit-seller { font-family: var(--font-head); font-size: 14px; font-weight: 700; }
+  .credit-limit { font-size: 20px; font-family: var(--font-head); font-weight: 700; color: var(--green); margin-bottom: 4px; }
+  .credit-terms { font-size: 12px; color: var(--text-muted); }
+  .credit-bar-wrap { margin-top: 12px; }
+  .credit-bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .credit-bar { height: 6px; background: var(--surface2); border-radius: 3px; }
+  .credit-bar-fill { height: 100%; border-radius: 3px; background: var(--green); }
+
+  /* FORMS */
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; display: block; font-weight: 500; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green-dim); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* TABS */
+  .tab-bar { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+  /* NOTIFICATION DOT */
+  .notif-badge {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    position: absolute;
+    top: -2px;
+    right: -2px;
+  }
+
+  /* TOGGLE ROLE */
+  .role-toggle { display: flex; gap: 8px; }
+  .role-toggle-btn {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.15s;
+  }
+  .role-toggle-btn.active { background: var(--green-glow); color: var(--green); border-color: var(--green-dim); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-title { font-family: var(--font-head); font-size: 16px; color: var(--text-dim); margin-bottom: 6px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .view.active { animation: fadeIn 0.2s ease; }
+
+  /* TOASTS */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text);
+    min-width: 280px;
+    animation: slideIn 0.3s ease;
+  }
+  .toast.error { border-left-color: var(--red); }
+  .toast.warning { border-left-color: var(--amber); }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .full-width { grid-column: 1/-1; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div style="display:flex; align-items:center; gap:32px;">
+    <div class="logo">WattMart<span>Clean Energy Marketplace</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showView('marketplace')">Marketplace</button>
+      <button class="nav-tab" onclick="showView('buyer-dash')">Buyer Dashboard</button>
+      <button class="nav-tab" onclick="showView('seller-dash')">Seller Dashboard</button>
+      <button class="nav-tab" onclick="showView('rfq')">RFQ Upload</button>
+      <button class="nav-tab" onclick="showView('cart')">Cart &amp; PO</button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="role-toggle">
+      <button class="role-toggle-btn active" id="btn-buyer" onclick="setRole('buyer')">Buyer View</button>
+      <button class="role-toggle-btn" id="btn-seller" onclick="setRole('seller')">Seller View</button>
+    </div>
+    <button class="cart-btn" onclick="showView('cart')">
+      🛒 Cart <div class="cart-count" id="cart-count">3</div>
+    </button>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- ===== MARKETPLACE VIEW ===== -->
+<div id="view-marketplace" class="view active">
+  <div class="marketplace-layout">
+    <div class="sidebar">
+      <div class="filter-group">
+        <div class="sidebar-title">Category</div>
+        <div class="filter-item active" onclick="filterCat(this)">
+          All Products <span class="filter-count">124</span>
+        </div>
+        <div class="filter-item" onclick="filterCat(this)">
+          ☀️ Solar Panels <span class="filter-count">38</span>
+        </div>
+        <div class="filter-item" onclick="filterCat(this)">
+          ⚡ Inverters <span class="filter-count">27</span>
+        </div>
+        <div class="filter-item" onclick="filterCat(this)">
+          🔋 Batteries <span class="filter-count">31</span>
+        </div>
+        <div class="filter-item" onclick="filterCat(this)">
+          🔌 Charge Controllers <span class="filter-count">18</span>
+        </div>
+        <div class="filter-item" onclick="filterCat(this)">
+          🛠️ Accessories <span class="filter-count">10</span>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Brand / OEM</div>
+        <div class="filter-item" onclick="filterCat(this)">Schneider Electric</div>
+        <div class="filter-item" onclick="filterCat(this)">Victron Energy</div>
+        <div class="filter-item" onclick="filterCat(this)">Trojan Battery</div>
+        <div class="filter-item" onclick="filterCat(this)">Jinko Solar</div>
+        <div class="filter-item" onclick="filterCat(this)">Pylontech</div>
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Price Range (NGN)</div>
+        <div class="price-range">
+          <input type="range" min="0" max="5000000" value="3000000" oninput="this.nextElementSibling.children[1].textContent='₦'+Number(this.value).toLocaleString()">
+          <div class="price-range-labels">
+            <span>₦0</span>
+            <span>₦3,000,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Seller Location</div>
+        <div class="filter-item active" onclick="filterCat(this)">All States</div>
+        <div class="filter-item" onclick="filterCat(this)">Lagos</div>
+        <div class="filter-item" onclick="filterCat(this)">Abuja (FCT)</div>
+        <div class="filter-item" onclick="filterCat(this)">Port Harcourt</div>
+      </div>
+
+      <div class="filter-group">
+        <div class="sidebar-title">Availability</div>
+        <div class="filter-item" onclick="filterCat(this)">
+          <span><span class="stock-dot in-stock"></span>In Stock</span>
+        </div>
+        <div class="filter-item" onclick="filterCat(this)">
+          <span><span class="stock-dot low-stock"></span>Low Stock</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Search products, brands, specifications..." id="search-input">
+        <button class="btn btn-primary" onclick="toast('Search results updated')">Search</button>
+        <button class="btn btn-outline" onclick="toast('Comparison mode — select up to 3 products')">Compare (0)</button>
+        <button class="btn btn-outline" onclick="showView('rfq')">📋 Upload RFQ</button>
+      </div>
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">All Products</div>
+          <div class="result-count">124 verified products from 18 sellers</div>
+        </div>
+        <select class="form-select" style="width:160px;" onchange="toast('Sorted')">
+          <option>Sort: Relevance</option>
+          <option>Price: Low–High</option>
+          <option>Price: High–Low</option>
+          <option>Best Rated</option>
+          <option>Newest</option>
+        </select>
+      </div>
+
+      <div class="product-grid">
+        <!-- Product 1 -->
+        <div class="product-card" onclick="openProduct()">
+          <div class="product-img">
+            <div class="product-img-bg"></div>
+            <div class="product-img-icon">⚡</div>
+            <div class="verified-badge">✓ Verified</div>
+          </div>
+          <div class="product-body">
+            <div class="product-brand">Schneider Electric</div>
+            <div class="product-name">Easy UPS 3S 30kVA Inverter</div>
+            <div class="product-spec">30kVA | 3-Phase | Online UPS | IGBT</div>
+            <div class="product-footer">
+              <div class="product-price">₦2,450,000 <span>/unit</span></div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addToCart()">Add to Cart</button>
+            </div>
+            <div class="seller-info">
+              <div class="seller-avatar">GE</div>
+              <span class="seller-name">GridEdge Distributors</span>
+              <span class="star-rating">★ 4.8</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card" onclick="openProduct()">
+          <div class="product-img">
+            <div class="product-img-bg"></div>
+            <div class="product-img-icon">☀️</div>
+            <div class="verified-badge">✓ Verified</div>
+          </div>
+          <div class="product-body">
+            <div class="product-brand">Jinko Solar</div>
+            <div class="product-name">Tiger Neo N-type 580W Panel</div>
+            <div class="product-spec">580W | N-Type Bifacial | 22.3% Efficiency</div>
+            <div class="product-footer">
+              <div class="product-price">₦185,000 <span>/unit</span></div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addToCart()">Add to Cart</button>
+            </div>
+            <div class="seller-info">
+              <div class="seller-avatar">SS</div>
+              <span class="seller-name">SolarSync Nigeria</span>
+              <span class="star-rating">★ 4.6</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card" onclick="openProduct()">
+          <div class="product-img">
+            <div class="product-img-bg"></div>
+            <div class="product-img-icon">🔋</div>
+            <div class="verified-badge">✓ Verified</div>
+          </div>
+          <div class="product-body">
+            <div class="product-brand">Pylontech</div>
+            <div class="product-name">US5000 LiFePO4 Battery</div>
+            <div class="product-spec">48V | 100Ah | 4.8kWh | 6000+ Cycles</div>
+            <div class="product-footer">
+              <div class="product-price">₦520,000 <span>/unit</span></div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addToCart()">Add to Cart</button>
+            </div>
+            <div class="seller-info">
+              <div class="seller-avatar">PE</div>
+              <span class="seller-name">PowerEdge Limited</span>
+              <span class="star-rating">★ 4.9</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card" onclick="openProduct()">
+          <div class="product-img" style="position:relative;">
+            <div class="product-img-bg"></div>
+            <div class="product-img-icon">⚡</div>
+            <div class="verified-badge">✓ Verified</div>
+          </div>
+          <div class="product-body">
+            <div class="product-brand">Victron Energy</div>
+            <div class="product-name">MultiPlus-II 48/5000 Inverter</div>
+            <div class="product-spec">48V | 5000VA | 4000W | Hybrid</div>
+            <div class="product-footer">
+              <div class="product-price">₦680,000 <span>/unit</span></div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addToCart()">Add to Cart</button>
+            </div>
+            <div class="seller-info">
+              <div class="seller-avatar">VS</div>
+              <span class="seller-name">Victron Solutions NG</span>
+              <span class="star-rating">★ 4.7</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card" onclick="openProduct()">
+          <div class="product-img">
+            <div class="product-img-bg"></div>
+            <div class="product-img-icon">🔋</div>
+            <div class="verified-badge">✓ Verified</div>
+            <div style="position:absolute;top:8px;left:8px;background:var(--amber-dim);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:3px;font-weight:700;">LOW STOCK</div>
+          </div>
+          <div class="product-body">
+            <div class="product-brand">Trojan Battery</div>
+            <div class="product-name">T-105 6V Deep Cycle Battery</div>
+            <div class="product-spec">6V | 225Ah | Flooded Lead Acid</div>
+            <div class="product-footer">
+              <div class="product-price">₦145,000 <span>/unit</span></div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addToCart()">Add to Cart</button>
+            </div>
+            <div class="seller-info">
+              <div class="seller-avatar">NE</div>
+              <span class="seller-name">NigPower Energy</span>
+              <span class="star-rating">★ 4.5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card" onclick="openProduct()">
+          <div class="product-img">
+            <div class="product-img-bg"></div>
+            <div class="product-img-icon">🔌</div>
+            <div class="verified-badge">✓ Verified</div>
+          </div>
+          <div class="product-body">
+            <div class="product-brand">Victron Energy</div>
+            <div class="product-name">SmartSolar MPPT 150/100</div>
+            <div class="product-spec">150V | 100A | Bluetooth | 48V System</div>
+            <div class="product-footer">
+              <div class="product-price">₦320,000 <span>/unit</span></div>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); addToCart()">Add to Cart</button>
+            </div>
+            <div class="seller-info">
+              <div class="seller-avatar">VS</div>
+              <span class="seller-name">Victron Solutions NG</span>
+              <span class="star-rating">★ 4.7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BUYER DASHBOARD ===== -->
+<div id="view-buyer-dash" class="view">
+  <div class="dashboard-layout">
+    <div class="dashboard-header">
+      <div class="dashboard-greeting">Welcome back</div>
+      <div class="dashboard-title">Apex Systems Integration Ltd</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Active Orders</div>
+        <div class="stat-value">7</div>
+        <div class="stat-up">↑ 3 new this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Spend (YTD)</div>
+        <div class="stat-value">₦48.2M</div>
+        <div class="stat-up">↑ 22% vs last year</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Available Credit</div>
+        <div class="stat-value">₦12.5M</div>
+        <div class="stat-sub">Across 3 sellers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending RFDs</div>
+        <div class="stat-value">2</div>
+        <div class="stat-sub">Awaiting seller response</div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab(this, 'orders')">Orders</div>
+      <div class="tab" onclick="switchTab(this, 'credit')">Credit Lines</div>
+      <div class="tab" onclick="switchTab(this, 'rfds')">Discount Requests</div>
+      <div class="tab" onclick="switchTab(this, 'quotes')">Saved Quotes</div>
+    </div>
+
+    <div id="tab-orders">
+      <div style="background:rgba(155,89,182,0.08);border:1px solid rgba(155,89,182,0.25);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:20px;">💜</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#a855f7;">Action Required — Payment Pending</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">PO WM-PO-2026-0075 is awaiting your payment. Please transfer funds to the seller's account and confirm on-platform.</div>
+        </div>
+        <button class="btn btn-sm" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;white-space:nowrap;margin-left:auto;" onclick="openPaymentModal()">Make Payment →</button>
+      </div>
+      <table class="order-table" style="width:100%;">
+        <thead>
+          <tr>
+            <th>PO Reference</th>
+            <th>Seller</th>
+            <th>Items</th>
+            <th>Value</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--green); font-weight:600;">WM-PO-2026-0089</td>
+            <td>GridEdge Distributors</td>
+            <td>3 items</td>
+            <td>₦7,350,000</td>
+            <td><span class="status-pill status-transit">In Transit</span></td>
+            <td>24 Feb 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="openPO()">View PO</button></td>
+          </tr>
+          <tr>
+            <td style="color:var(--green); font-weight:600;">WM-PO-2026-0082</td>
+            <td>SolarSync Nigeria</td>
+            <td>50 units</td>
+            <td>₦9,250,000</td>
+            <td><span class="status-pill status-confirmed">OA Issued</span></td>
+            <td>21 Feb 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="openPO()">View PO</button></td>
+          </tr>
+          <tr style="background:rgba(155,89,182,0.05);">
+            <td style="color:var(--green); font-weight:600;">WM-PO-2026-0075</td>
+            <td>PowerEdge Limited</td>
+            <td>10 units</td>
+            <td>₦5,200,000</td>
+            <td><span class="status-pill status-awaiting-payment">⏳ Awaiting Payment</span></td>
+            <td>19 Feb 2026</td>
+            <td><button class="btn btn-sm" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;" onclick="openPaymentModal()">Pay Now</button></td>
+          </tr>
+          <tr>
+            <td style="color:var(--green); font-weight:600;">WM-PO-2026-0061</td>
+            <td>NigPower Energy</td>
+            <td>24 units</td>
+            <td>₦3,480,000</td>
+            <td><span class="status-pill status-delivered">Delivered</span></td>
+            <td>10 Feb 2026</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="openPO()">View PO</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="tab-credit" style="display:none;">
+      <div style="max-width:700px;">
+        <div class="credit-card">
+          <div class="credit-header">
+            <div>
+              <div class="seller-name" style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">SELLER</div>
+              <div class="credit-seller">GridEdge Distributors</div>
+            </div>
+            <div><span class="status-pill status-confirmed">Active</span></div>
+          </div>
+          <div class="credit-limit">₦8,000,000</div>
+          <div class="credit-terms">30% down payment · Balance in 45 days post-delivery</div>
+          <div class="credit-bar-wrap">
+            <div class="credit-bar-label">
+              <span>Used: ₦3,200,000</span>
+              <span>Available: ₦4,800,000</span>
+            </div>
+            <div class="credit-bar"><div class="credit-bar-fill" style="width:40%"></div></div>
+          </div>
+        </div>
+        <div class="credit-card">
+          <div class="credit-header">
+            <div>
+              <div class="seller-name" style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">SELLER</div>
+              <div class="credit-seller">SolarSync Nigeria</div>
+            </div>
+            <div><span class="status-pill status-confirmed">Active</span></div>
+          </div>
+          <div class="credit-limit">₦5,000,000</div>
+          <div class="credit-terms">50% down payment · Balance in 30 days post-delivery</div>
+          <div class="credit-bar-wrap">
+            <div class="credit-bar-label">
+              <span>Used: ₦0</span>
+              <span>Available: ₦5,000,000</span>
+            </div>
+            <div class="credit-bar"><div class="credit-bar-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+        <button class="btn btn-outline" onclick="showCreditRequest()">+ Request Credit from New Seller</button>
+      </div>
+    </div>
+
+    <div id="tab-rfds" style="display:none;">
+      <div style="max-width:800px;">
+        <table class="order-table" style="width:100%;">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Seller</th>
+              <th>Listed Price</th>
+              <th>Requested Discount</th>
+              <th>Status</th>
+              <th>Justification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Jinko Tiger 580W (×50)</td>
+              <td>SolarSync Nigeria</td>
+              <td>₦185,000/unit</td>
+              <td>8% (volume)</td>
+              <td><span class="status-pill status-pending">Pending</span></td>
+              <td style="color:var(--text-muted);">50-unit bulk commitment</td>
+            </tr>
+            <tr>
+              <td>Schneider Easy UPS 30kVA (×2)</td>
+              <td>GridEdge Distributors</td>
+              <td>₦2,450,000/unit</td>
+              <td>5% (project)</td>
+              <td><span class="status-pill status-confirmed">Approved — 5%</span></td>
+              <td style="color:var(--text-muted);">Referencing Project Lekki Phase 3</td>
+            </tr>
+            <tr>
+              <td>Victron MultiPlus-II (×10)</td>
+              <td>Victron Solutions NG</td>
+              <td>₦680,000/unit</td>
+              <td>10% (volume)</td>
+              <td><span class="status-pill status-rejected">Rejected</span></td>
+              <td style="color:var(--text-muted);">High volume request</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-quotes" style="display:none;">
+      <div style="max-width:700px;">
+        <table class="order-table" style="width:100%;">
+          <thead>
+            <tr>
+              <th>Quote Reference</th>
+              <th>Items</th>
+              <th>Total Value</th>
+              <th>Generated</th>
+              <th>Expires</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--green);font-weight:600;">RFQ-2026-0024</td>
+              <td>8 line items</td>
+              <td>₦22,400,000</td>
+              <td>25 Feb 2026</td>
+              <td>27 Feb 2026</td>
+              <td><button class="btn btn-primary btn-sm" onclick="showView('rfq')">View Quote</button></td>
+            </tr>
+            <tr>
+              <td style="color:var(--green);font-weight:600;">RFQ-2026-0018</td>
+              <td>4 line items</td>
+              <td>₦8,750,000</td>
+              <td>18 Feb 2026</td>
+              <td style="color:var(--red);">Expired</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="showView('rfq')">Re-quote</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SELLER DASHBOARD ===== -->
+<div id="view-seller-dash" class="view">
+  <div class="dashboard-layout">
+    <div class="dashboard-header">
+      <div class="dashboard-greeting">Seller Account</div>
+      <div class="dashboard-title">GridEdge Distributors</div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <span class="status-pill status-confirmed">✓ Verified Seller</span>
+        <span style="background:rgba(46,204,113,0.1);color:var(--green);border:1px solid var(--green-dim);font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Schneider Electric Authorized</span>
+        <span style="background:rgba(46,204,113,0.1);color:var(--green);border:1px solid var(--green-dim);font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;">Victron Energy Authorized</span>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Pending POs</div>
+        <div class="stat-value">4</div>
+        <div class="stat-sub">Require action</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Revenue (Feb)</div>
+        <div class="stat-value">₦31.4M</div>
+        <div class="stat-up">↑ 18% vs Jan</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Listings</div>
+        <div class="stat-value">46</div>
+        <div class="stat-sub">3 low stock alerts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Seller Rating</div>
+        <div class="stat-value">4.8 ★</div>
+        <div class="stat-sub">Based on 127 reviews</div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTabSeller(this, 'seller-pos')">Incoming POs</div>
+      <div class="tab" onclick="switchTabSeller(this, 'seller-rfds')">Discount Requests</div>
+      <div class="tab" onclick="switchTabSeller(this, 'seller-credit')">Credit Requests</div>
+      <div class="tab" onclick="switchTabSeller(this, 'seller-inventory')">Inventory</div>
+    </div>
+
+    <div id="tab-seller-pos">
+      <!-- PO awaiting payment from buyer -->
+      <div class="po-action-card" style="border-color:rgba(155,89,182,0.3);">
+        <div class="po-action-header">
+          <div>
+            <div class="po-action-ref">WM-PO-2026-0091</div>
+            <div class="po-action-buyer">From: Apex Systems Integration Ltd <span class="status-pill status-awaiting-payment" style="margin-left:8px;">⏳ Awaiting Buyer Payment</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div class="po-action-value">₦4,900,000</div>
+            <div style="font-size:11px;color:var(--text-muted);">PO Received: 26 Feb 2026 10:22AM</div>
+          </div>
+        </div>
+        <div class="po-action-items">2× Easy UPS 3S 30kVA · 1× Schneider APC Smart-UPS 3000VA</div>
+        <div style="background:rgba(155,89,182,0.08);border:1px solid rgba(155,89,182,0.2);border-radius:6px;padding:10px 14px;margin:10px 0;font-size:12px;color:#a855f7;">
+          🔒 PO accepted. Waiting for buyer to transfer payment (₦4,900,000) to your account. You will be notified once buyer clicks "Payment Made." Only then can you confirm and issue an OA.
+        </div>
+        <div class="po-action-footer">
+          <button class="btn btn-ghost" onclick="openPO()">View PO Details</button>
+          <button class="btn btn-outline btn-sm" onclick="toast('⏰ Payment reminder sent to Apex Systems Integration Ltd')">Send Payment Reminder</button>
+        </div>
+      </div>
+
+      <!-- PO where buyer has clicked "Payment Made" — seller needs to confirm -->
+      <div class="po-action-card" style="border-color:rgba(52,152,219,0.4);box-shadow:0 0 0 1px rgba(52,152,219,0.15);">
+        <div class="po-action-header">
+          <div>
+            <div class="po-action-ref">WM-PO-2026-0088</div>
+            <div class="po-action-buyer">From: Lagos Solar Contractors <span class="status-pill status-payment-made" style="margin-left:8px;">💳 Buyer Claims Payment Made</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div class="po-action-value" style="color:#3498db;">₦2,040,000</div>
+            <div style="font-size:11px;color:var(--text-muted);">Payment declared: 26 Feb 2026 2:45PM</div>
+          </div>
+        </div>
+        <div class="po-action-items">3× Victron SmartSolar MPPT 150/100</div>
+        <div style="background:rgba(52,152,219,0.08);border:1px solid rgba(52,152,219,0.25);border-radius:6px;padding:12px 14px;margin:10px 0;">
+          <div style="font-size:12px;font-weight:700;color:#3498db;margin-bottom:8px;">⚡ Action Required — Verify Payment Receipt</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Lagos Solar Contractors has declared that ₦2,040,000 has been transferred to your Zenith Bank account ending <strong style="color:var(--text);">...4821</strong>. Please verify your bank account before confirming.</div>
+          <div style="display:flex;gap:10px;">
+            <div style="background:var(--surface2);border-radius:6px;padding:8px 12px;flex:1;">
+              <div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;">AMOUNT DECLARED</div>
+              <div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--green);">₦2,040,000</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:6px;padding:8px 12px;flex:1;">
+              <div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;">DECLARED AT</div>
+              <div style="font-size:13px;font-weight:600;">26 Feb · 2:45PM</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:6px;padding:8px 12px;flex:1;">
+              <div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;">OA WILL BE ISSUED</div>
+              <div style="font-size:13px;font-weight:600;">After you confirm</div>
+            </div>
+          </div>
+        </div>
+        <div class="po-action-footer">
+          <button class="btn btn-sm btn-payment-received" onclick="confirmPaymentReceived()">✅ Payment Confirmed — Issue OA</button>
+          <button class="btn btn-danger btn-sm" onclick="toast('⚠️ Payment dispute raised — WattMart support notified. Both parties will be contacted.', 'error')">⚠ Payment Not Received</button>
+          <button class="btn btn-ghost btn-sm" onclick="openPO()">View PO</button>
+        </div>
+      </div>
+
+      <!-- Completed / OA Issued -->
+      <div class="po-action-card" style="border-color:var(--green-dim);">
+        <div class="po-action-header">
+          <div>
+            <div class="po-action-ref">WM-PO-2026-0082</div>
+            <div class="po-action-buyer">From: Apex Systems Integration Ltd <span class="status-pill status-confirmed" style="margin-left:8px;">✓ OA Issued</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div class="po-action-value" style="color:var(--green);">₦9,250,000</div>
+            <div style="font-size:11px;color:var(--text-muted);">OA Date: 22 Feb 2026</div>
+          </div>
+        </div>
+        <div class="po-action-items">50× Jinko Tiger Neo 580W — <span style="color:var(--green);">Payment confirmed · Awaiting logistics pickup</span></div>
+        <div class="po-action-footer">
+          <button class="btn btn-ghost" onclick="openPO()">View OA</button>
+          <button class="btn btn-outline" onclick="toast('Logistics partner notified for pickup')">Notify Logistics</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-seller-rfds" style="display:none;">
+      <div class="po-action-card">
+        <div class="po-action-header">
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">DISCOUNT REQUEST</div>
+            <div style="font-family:var(--font-head);font-size:14px;font-weight:700;">Jinko Tiger 580W × 50 units</div>
+            <div style="font-size:13px;color:var(--text-dim);margin-top:4px;">From: Apex Systems Integration Ltd</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:var(--text-muted);">Listed: ₦185,000/unit</div>
+            <div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--amber);">−8% requested</div>
+            <div style="font-size:11px;color:var(--text-muted);">= ₦170,200/unit</div>
+          </div>
+        </div>
+        <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:13px;color:var(--text-dim);margin:8px 0;">
+          <strong style="color:var(--text);">Justification:</strong> Bulk order of 50 units for an ongoing C&I project in Lekki Phase 2. Committed to full payment upfront.
+        </div>
+        <div class="po-action-footer">
+          <button class="btn btn-primary" onclick="toast('✅ 8% discount approved — buyer notified')">Approve 8%</button>
+          <button class="btn btn-amber" onclick="toast('Counter-offer sent: 5% discount approved')">Counter: 5%</button>
+          <button class="btn btn-danger" onclick="toast('Discount request declined — buyer notified')">Decline</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-seller-credit" style="display:none;">
+      <div class="po-action-card">
+        <div class="po-action-header">
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">CREDIT REQUEST</div>
+            <div style="font-family:var(--font-head);font-size:14px;font-weight:700;">Apex Systems Integration Ltd</div>
+          </div>
+          <div><span class="status-pill status-pending">Pending Review</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0;">
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">Requested Credit Limit</div>
+            <div style="font-family:var(--font-head);font-size:18px;font-weight:700;">₦10,000,000</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">Business Type</div>
+            <div style="font-size:14px;font-weight:600;">System Integrator</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">WattMart Buyer Rating</div>
+            <div style="font-size:14px;font-weight:600;color:var(--green);">4.9 ★ (38 transactions)</div>
+          </div>
+        </div>
+        <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:13px;color:var(--text-dim);margin-bottom:12px;">
+          Attached: CAC Certificate, 6-month bank statements, 3 trade references, project pipeline summary (₦85M in active projects)
+        </div>
+        <div class="form-group">
+          <label class="form-label">Approve Credit Limit</label>
+          <input class="form-input" value="8,000,000" style="width:200px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Credit Terms</label>
+          <select class="form-select" style="width:300px;">
+            <option>30% down payment, balance in 45 days post-delivery</option>
+            <option>50% down payment, balance in 30 days post-delivery</option>
+            <option>40% down payment, balance in 60 days post-delivery</option>
+          </select>
+        </div>
+        <div class="po-action-footer">
+          <button class="btn btn-primary" onclick="toast('✅ Credit line approved: ₦8M at 30% down / 45 days — buyer notified')">Approve Credit</button>
+          <button class="btn btn-danger" onclick="toast('Credit request declined — buyer notified')">Decline</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-seller-inventory" style="display:none;">
+      <table class="order-table" style="width:100%;">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Brand</th>
+            <th>Listed Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Easy UPS 3S 30kVA</td>
+            <td>Schneider Electric</td>
+            <td>₦2,450,000</td>
+            <td><span class="stock-dot in-stock"></span>8 units</td>
+            <td><span class="status-pill status-confirmed">Live</span></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="toast('Edit product modal opened')">Edit</button></td>
+          </tr>
+          <tr>
+            <td>Victron SmartSolar MPPT 150/100</td>
+            <td>Victron Energy</td>
+            <td>₦320,000</td>
+            <td><span class="stock-dot low-stock"></span>3 units</td>
+            <td><span class="status-pill status-pending">Low Stock</span></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="toast('Update inventory modal opened')">Update Stock</button></td>
+          </tr>
+          <tr>
+            <td>APC Smart-UPS 3000VA</td>
+            <td>Schneider Electric</td>
+            <td>₦780,000</td>
+            <td><span class="stock-dot in-stock"></span>15 units</td>
+            <td><span class="status-pill status-confirmed">Live</span></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="toast('Edit product modal opened')">Edit</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="toast('Add new product listing modal opened')">+ Add Product Listing</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RFQ VIEW ===== -->
+<div id="view-rfq" class="view">
+  <div class="rfq-layout">
+    <div class="dashboard-header">
+      <div class="dashboard-title">RFQ Upload & Quote Generation</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Upload your requirements in bulk and receive automated multi-seller quotes</div>
+    </div>
+
+    <div class="rfq-progress">
+      <div class="progress-steps">
+        <div class="progress-step done" id="ps1">
+          <div class="step-circle">✓</div>
+          <div class="step-label">Upload Template</div>
+        </div>
+        <div class="progress-step done" id="ps2">
+          <div class="step-circle">✓</div>
+          <div class="step-label">Validate & Parse</div>
+        </div>
+        <div class="progress-step current" id="ps3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Review Quote</div>
+        </div>
+        <div class="progress-step" id="ps4">
+          <div class="step-circle">4</div>
+          <div class="step-label">Select & Add to Cart</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:13px;font-weight:600;">RFQ-2026-0024 · 8 line items · Generated 25 Feb 2026</div>
+          <div style="font-size:12px;color:var(--amber);margin-top:2px;">⏱ Quote expires in 36 hours</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="toast('RFQ template downloaded')">⬇ Download Template</button>
+          <button class="btn btn-ghost btn-sm" onclick="toast('PDF quote downloaded')">⬇ Export PDF Quote</button>
+          <button class="btn btn-primary btn-sm" onclick="rfqAddToCart()">Add Selected to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-results">
+      <!-- Line 1 -->
+      <div class="quote-line">
+        <div class="quote-line-header">
+          <div class="quote-line-num">LINE 1</div>
+          <div class="quote-line-product">Solar Panels — N-Type, 550–600W</div>
+          <div class="quote-line-spec">Qty: 50 units · All brands</div>
+        </div>
+        <div class="quote-options">
+          <div class="quote-option selected" onclick="selectOption(this)">
+            <input type="radio" name="q1" checked>
+            <div>
+              <div class="qo-seller">SolarSync Nigeria <span class="qo-badge qo-best">BEST PRICE</span></div>
+              <div class="qo-stars">★★★★½ 4.6</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div class="qo-price">₦9,250,000</div>
+              <div class="qo-delivery">₦185,000/unit · 7–10 days</div>
+            </div>
+          </div>
+          <div class="quote-option" onclick="selectOption(this)">
+            <input type="radio" name="q1">
+            <div>
+              <div class="qo-seller">PowerEdge Limited</div>
+              <div class="qo-stars">★★★★★ 4.9</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div class="qo-price">₦9,500,000</div>
+              <div class="qo-delivery">₦190,000/unit · 5–7 days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line 2 -->
+      <div class="quote-line">
+        <div class="quote-line-header">
+          <div class="quote-line-num">LINE 2</div>
+          <div class="quote-line-product">Hybrid Inverter — 5kVA, 48V</div>
+          <div class="quote-line-spec">Qty: 10 units · Victron preferred</div>
+        </div>
+        <div class="quote-options">
+          <div class="quote-option selected" onclick="selectOption(this)">
+            <input type="radio" name="q2" checked>
+            <div>
+              <div class="qo-seller">Victron Solutions NG <span class="qo-badge qo-best">BEST MATCH</span></div>
+              <div class="qo-stars">★★★★½ 4.7</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div class="qo-price">₦6,800,000</div>
+              <div class="qo-delivery">₦680,000/unit · 3–5 days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line 3 -->
+      <div class="quote-line">
+        <div class="quote-line-header">
+          <div class="quote-line-num">LINE 3</div>
+          <div class="quote-line-product">LiFePO4 Battery — 48V, 100Ah+</div>
+          <div class="quote-line-spec">Qty: 20 units · All brands</div>
+        </div>
+        <div class="quote-options">
+          <div class="quote-option selected" onclick="selectOption(this)">
+            <input type="radio" name="q3" checked>
+            <div>
+              <div class="qo-seller">PowerEdge Limited <span class="qo-badge qo-best">TOP RATED</span></div>
+              <div class="qo-stars">★★★★★ 4.9</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div class="qo-price">₦10,400,000</div>
+              <div class="qo-delivery">₦520,000/unit · 5–7 days</div>
+            </div>
+          </div>
+          <div class="quote-option" onclick="selectOption(this)">
+            <input type="radio" name="q3">
+            <div>
+              <div class="qo-seller">SolarSync Nigeria</div>
+              <div class="qo-stars">★★★★½ 4.6</div>
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div class="qo-price">₦10,600,000</div>
+              <div class="qo-delivery">₦530,000/unit · 10–14 days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line 4 — unmatched -->
+      <div class="quote-line" style="border-color:rgba(231,76,60,0.3);">
+        <div class="quote-line-header" style="background:rgba(231,76,60,0.08);">
+          <div class="quote-line-num">LINE 4</div>
+          <div class="quote-line-product">Bi-directional EV Charger — 22kW</div>
+          <div class="quote-line-spec" style="color:var(--red);">⚠ No matches found</div>
+        </div>
+        <div style="padding:12px 16px;font-size:13px;color:var(--text-muted);">
+          No verified sellers currently carry this product. 
+          <span style="color:var(--amber);cursor:pointer;text-decoration:underline;" onclick="toast('Alert created — sellers will be notified of your requirement')">Alert me when available</span> · 
+          <span style="color:var(--amber);cursor:pointer;text-decoration:underline;" onclick="toast('Request sent to all relevant verified sellers')">Request to Sellers</span>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:12px;color:var(--text-muted);">SELECTED TOTAL</div>
+          <div style="font-family:var(--font-head);font-size:24px;font-weight:800;">₦26,450,000</div>
+          <div style="font-size:12px;color:var(--text-muted);">3 line items across 3 sellers</div>
+        </div>
+        <button class="btn btn-primary" style="padding:12px 24px;font-size:15px;" onclick="rfqAddToCart()">Proceed to Cart →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CART VIEW ===== -->
+<div id="view-cart" class="view">
+  <div class="cart-layout">
+    <div>
+      <div class="section-title" style="margin-bottom:20px;">Shopping Cart</div>
+
+      <div class="seller-section-label">SolarSync Nigeria</div>
+      <div class="cart-item">
+        <div class="cart-item-img">☀️</div>
+        <div class="cart-item-details">
+          <div class="cart-item-name">Jinko Tiger Neo N-type 580W</div>
+          <div class="cart-item-meta">Jinko Solar · Unit: ₦185,000</div>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="updateQty(this, -1)">−</button>
+            <div class="qty-num">50</div>
+            <button class="qty-btn" onclick="updateQty(this, 1)">+</button>
+          </div>
+          <div class="rfd-link" onclick="openRFD()">💬 Request discount (RFD)</div>
+        </div>
+        <div class="cart-item-price">
+          <div class="cart-item-total">₦9,250,000</div>
+          <div style="font-size:11px;color:var(--green);margin-top:4px;">Listed price</div>
+        </div>
+      </div>
+
+      <div class="seller-section-label">Victron Solutions NG</div>
+      <div class="cart-item">
+        <div class="cart-item-img">⚡</div>
+        <div class="cart-item-details">
+          <div class="cart-item-name">Victron MultiPlus-II 48/5000</div>
+          <div class="cart-item-meta">Victron Energy · Unit: ₦680,000</div>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="updateQty(this, -1)">−</button>
+            <div class="qty-num">10</div>
+            <button class="qty-btn" onclick="updateQty(this, 1)">+</button>
+          </div>
+          <div class="rfd-link" onclick="openRFD()">💬 Request discount (RFD)</div>
+        </div>
+        <div class="cart-item-price">
+          <div class="cart-item-total">₦6,800,000</div>
+          <div style="font-size:11px;color:var(--green);margin-top:4px;">Listed price</div>
+        </div>
+      </div>
+
+      <div class="seller-section-label">PowerEdge Limited</div>
+      <div class="cart-item">
+        <div class="cart-item-img">🔋</div>
+        <div class="cart-item-details">
+          <div class="cart-item-name">Pylontech US5000 LiFePO4</div>
+          <div class="cart-item-meta">Pylontech · Unit: ₦520,000</div>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="updateQty(this, -1)">−</button>
+            <div class="qty-num">20</div>
+            <button class="qty-btn" onclick="updateQty(this, 1)">+</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <span style="font-size:12px;color:var(--green);">✓ Credit approved (30% down)</span>
+          </div>
+        </div>
+        <div class="cart-item-price">
+          <div class="cart-item-total">₦10,400,000</div>
+          <div style="font-size:11px;color:var(--amber);margin-top:4px;">Credit order</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="order-summary">
+        <div class="summary-title">Order Summary</div>
+        <div class="summary-line">
+          <span>SolarSync Nigeria (1 item)</span><span>₦9,250,000</span>
+        </div>
+        <div class="summary-line">
+          <span>Victron Solutions NG (1 item)</span><span>₦6,800,000</span>
+        </div>
+        <div class="summary-line">
+          <span>PowerEdge Limited (1 item)</span><span>₦10,400,000</span>
+        </div>
+        <div class="summary-line" style="color:var(--text-muted);">
+          <span>Logistics (est.)</span><span>₦85,000</span>
+        </div>
+
+        <div class="summary-line total">
+          <span>Total</span><span>₦26,535,000</span>
+        </div>
+
+        <div class="logistics-selector">
+          <div style="font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:10px;">Select Logistics Partner</div>
+          <div class="logistics-option selected">
+            <input type="radio" name="logistics" checked>
+            <div>
+              <div class="logistics-name">GIG Logistics</div>
+              <div class="logistics-time">5–7 business days</div>
+            </div>
+            <div class="logistics-cost">₦85,000</div>
+          </div>
+          <div class="logistics-option" onclick="this.classList.add('selected'); document.querySelectorAll('.logistics-option').forEach(e=>e!=this&&e.classList.remove('selected'))">
+            <input type="radio" name="logistics">
+            <div>
+              <div class="logistics-name">DHL Supply Chain</div>
+              <div class="logistics-time">3–5 business days</div>
+            </div>
+            <div class="logistics-cost">₦142,000</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border);">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">Delivery Address</div>
+          <select class="form-select" style="margin-bottom:12px;">
+            <option>Plot 44, Admiralty Way, Lekki Phase 1, Lagos</option>
+            <option>+ Add new address</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%; padding:12px; font-size:14px; margin-top:8px;" onclick="placePO()">
+          Place Order & Generate POs →
+        </button>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">
+          3 separate POs will be generated, one per seller
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PO MODAL ===== -->
+<div class="modal-overlay" id="po-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Purchase Order</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Formally transmitted to seller upon placement</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('po-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="po-header">
+        <div>
+          <div class="po-ref">WM-PO-2026-0089</div>
+          <div style="font-size:12px;color:var(--text-muted);">Generated automatically by WattMart</div>
+        </div>
+        <div class="po-date">26 February 2026</div>
+      </div>
+      <div class="po-parties">
+        <div>
+          <div class="po-party-label">Buyer</div>
+          <div class="po-party-name">Apex Systems Integration Ltd</div>
+          <div class="po-party-meta">System Integrator · Lagos<br>RC: 1234567</div>
+        </div>
+        <div>
+          <div class="po-party-label">Seller</div>
+          <div class="po-party-name">GridEdge Distributors</div>
+          <div class="po-party-meta">✓ Verified · Schneider Electric Auth.<br>Lagos, Nigeria</div>
+        </div>
+      </div>
+      <table class="po-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Spec</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Easy UPS 3S 30kVA</td>
+            <td>3-Phase · IGBT</td>
+            <td>2</td>
+            <td>₦2,450,000</td>
+            <td>₦4,900,000</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>APC Smart-UPS 3000VA</td>
+            <td>Line Interactive</td>
+            <td>3</td>
+            <td>₦780,000</td>
+            <td>₦2,340,000</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="po-totals">
+        <div class="po-total-line"><span>Subtotal</span><span>₦7,240,000</span></div>
+        <div class="po-total-line"><span>Logistics (GIG)</span><span>₦110,000</span></div>
+        <div class="po-total-line grand"><span>Grand Total</span><span>₦7,350,000</span></div>
+      </div>
+      <div class="po-terms">
+        <strong>Payment Terms:</strong> Full payment required prior to OA issuance.<br>
+        <strong>Delivery:</strong> Plot 44, Admiralty Way, Lekki Phase 1, Lagos · Est. 5–7 business days.<br>
+        <strong>This PO constitutes a formal purchase commitment.</strong> Order Acknowledgment (OA) is only issued after payment is confirmed by both parties on WattMart.
+      </div>
+
+      <!-- Payment Timeline in PO -->
+      <div style="margin-top:16px;">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Order Progression</div>
+        <div class="payment-timeline">
+          <div class="pt-step done">
+            <div class="pt-icon">✓</div>
+            <div class="pt-content">
+              <div class="pt-label">PO Generated & Transmitted</div>
+              <div class="pt-desc">24 Feb 2026 · 9:14AM · Ref: WM-PO-2026-0089</div>
+            </div>
+          </div>
+          <div class="pt-step done">
+            <div class="pt-icon">✓</div>
+            <div class="pt-content">
+              <div class="pt-label">Payment Made by Buyer</div>
+              <div class="pt-desc">24 Feb 2026 · 11:32AM · Buyer confirmed transfer of ₦7,350,000</div>
+            </div>
+          </div>
+          <div class="pt-step done">
+            <div class="pt-icon">✓</div>
+            <div class="pt-content">
+              <div class="pt-label">Payment Confirmed by Seller</div>
+              <div class="pt-desc">24 Feb 2026 · 12:05PM · GridEdge Distributors verified receipt</div>
+            </div>
+          </div>
+          <div class="pt-step done">
+            <div class="pt-icon">✓</div>
+            <div class="pt-content">
+              <div class="pt-label">Order Acknowledgment Issued</div>
+              <div class="pt-desc">24 Feb 2026 · 12:07PM · OA-2026-0089 sent to buyer</div>
+            </div>
+          </div>
+          <div class="pt-step active">
+            <div class="pt-icon">→</div>
+            <div class="pt-content">
+              <div class="pt-label" style="color:#a855f7;">In Transit</div>
+              <div class="pt-desc">GIG Logistics · Est. delivery 3 Mar 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="btn btn-outline" onclick="toast('PO downloaded as PDF')">⬇ Download PDF</button>
+        <button class="btn btn-ghost" onclick="closeModal('po-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BUYER PAYMENT MODAL ===== -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Make Payment</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">PO WM-PO-2026-0075 · PowerEdge Limited</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Step indicator -->
+      <div style="display:flex;gap:0;margin-bottom:20px;">
+        <div id="pay-step-1" style="flex:1;text-align:center;padding-bottom:12px;border-bottom:2px solid #a855f7;color:#a855f7;font-size:12px;font-weight:600;">① Transfer Funds</div>
+        <div id="pay-step-2" style="flex:1;text-align:center;padding-bottom:12px;border-bottom:2px solid var(--border);color:var(--text-muted);font-size:12px;font-weight:600;">② Confirm on WattMart</div>
+        <div id="pay-step-3" style="flex:1;text-align:center;padding-bottom:12px;border-bottom:2px solid var(--border);color:var(--text-muted);font-size:12px;font-weight:600;">③ Seller Verifies</div>
+      </div>
+
+      <div id="pay-panel-1">
+        <div class="payment-panel">
+          <div class="payment-panel-title">🏦 Seller Bank Details</div>
+          <div class="payment-panel-sub">Transfer the exact amount below to this account. Do not round up or split the transfer.</div>
+
+          <div class="bank-details-box">
+            <div class="bank-detail-row">
+              <span class="bank-detail-label">Account Name</span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="bank-detail-value">PowerEdge Limited</span>
+                <button class="copy-btn" onclick="toast('Account name copied')">Copy</button>
+              </div>
+            </div>
+            <div class="bank-detail-row">
+              <span class="bank-detail-label">Bank</span>
+              <span class="bank-detail-value">Zenith Bank Plc</span>
+            </div>
+            <div class="bank-detail-row">
+              <span class="bank-detail-label">Account Number</span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="bank-detail-value">2019483721</span>
+                <button class="copy-btn" onclick="toast('Account number copied to clipboard')">Copy</button>
+              </div>
+            </div>
+            <div class="bank-detail-row">
+              <span class="bank-detail-label">Amount to Transfer</span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="bank-detail-value amount">₦5,200,000</span>
+                <button class="copy-btn" onclick="toast('Amount copied')">Copy</button>
+              </div>
+            </div>
+            <div class="bank-detail-row">
+              <span class="bank-detail-label">Narration / Reference</span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="bank-detail-value" style="font-size:12px;color:var(--green);">WM-PO-2026-0075</span>
+                <button class="copy-btn" onclick="toast('Reference copied — please use this as your transfer narration')">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-warning">
+            ⚠️ <strong>Important:</strong> Always use the WattMart reference (WM-PO-2026-0075) as your transfer narration. Only transfer to the account shown here — WattMart will never ask you to transfer to a different account. If in doubt, contact WattMart support before transferring.
+          </div>
+
+          <button class="payment-confirm-btn" onclick="advancePaymentStep()">
+            ✅ I Have Made This Payment
+          </button>
+          <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">By clicking this, you confirm you have transferred ₦5,200,000 to the account above. A notification will be sent to the seller immediately.</div>
+        </div>
+      </div>
+
+      <div id="pay-panel-2" style="display:none;">
+        <div style="text-align:center;padding:24px 0 16px;">
+          <div style="font-size:48px;margin-bottom:12px;">📨</div>
+          <div style="font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:8px;">Payment Notification Sent</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.6;max-width:360px;margin:0 auto;">
+            PowerEdge Limited has been notified that you have made payment of <strong style="color:var(--green);">₦5,200,000</strong>. They will verify receipt in their bank account and confirm on WattMart.
+          </div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:16px;margin:16px 0;">
+          <div style="font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:10px;">What happens next?</div>
+          <div class="payment-timeline" style="margin:0;">
+            <div class="pt-step done">
+              <div class="pt-icon">✓</div>
+              <div class="pt-content">
+                <div class="pt-label">You declared payment made</div>
+                <div class="pt-desc">Just now · ₦5,200,000 to Zenith Bank ···3721</div>
+              </div>
+            </div>
+            <div class="pt-step active">
+              <div class="pt-icon">⏳</div>
+              <div class="pt-content">
+                <div class="pt-label" style="color:#a855f7;">Seller verifying bank receipt</div>
+                <div class="pt-desc">PowerEdge Limited will confirm payment in their account</div>
+              </div>
+            </div>
+            <div class="pt-step">
+              <div class="pt-icon">📋</div>
+              <div class="pt-content">
+                <div class="pt-label">Order Acknowledgment issued</div>
+                <div class="pt-desc">OA will be generated and sent to you automatically</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:16px;">
+          If the seller does not confirm within <strong>4 business hours</strong>, you can raise a payment dispute and WattMart support will step in.
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" style="flex:1;" onclick="closeModal('payment-modal')">Close</button>
+          <button class="btn btn-danger btn-sm" style="flex:1;" onclick="toast('⚠️ Dispute raised — WattMart support will contact both parties within 2 hours.', 'error'); closeModal('payment-modal')">Raise Payment Dispute</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- RFD MODAL -->
+<div class="modal-overlay" id="rfd-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">Request for Discount (RFD)</div>
+      <button class="modal-close" onclick="closeModal('rfd-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:16px;">
+        <div style="font-size:12px;color:var(--text-muted);">Product</div>
+        <div style="font-family:var(--font-head);font-weight:700;">Jinko Tiger Neo 580W × 50 units</div>
+        <div style="font-size:13px;color:var(--text-dim);">Listed: ₦185,000/unit · Total: ₦9,250,000</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Discount Requested (%)</label>
+        <input class="form-input" type="number" value="8" placeholder="e.g. 5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Justification <span style="color:var(--text-muted);">(required)</span></label>
+        <select class="form-select" style="margin-bottom:8px;">
+          <option>Volume commitment</option>
+          <option>Project reference</option>
+          <option>Existing relationship</option>
+          <option>Repeat order</option>
+        </select>
+        <textarea class="form-textarea" placeholder="Describe your justification — e.g. 50-unit order for a C&I project in Lekki Phase 2, committed to full upfront payment...">50-unit bulk order for C&I project in Lekki Phase 2. Committed to full upfront payment.</textarea>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="submitRFD()">Submit RFD to Seller</button>
+        <button class="btn btn-outline" onclick="closeModal('rfd-modal')">Cancel</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:10px;">The final agreed price, if discount is approved, will only be visible to you and the seller and will never be displayed publicly.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- VIEW MANAGEMENT ----
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('view-' + id).classList.add('active');
+    const tabMap = { marketplace: 0, 'buyer-dash': 1, 'seller-dash': 2, rfq: 3, cart: 4 };
+    const tabs = document.querySelectorAll('.nav-tab');
+    if (tabMap[id] !== undefined) tabs[tabMap[id]].classList.add('active');
+  }
+
+  // ---- ROLE TOGGLE ----
+  let currentRole = 'buyer';
+  function setRole(role) {
+    currentRole = role;
+    document.getElementById('btn-buyer').className = 'role-toggle-btn' + (role === 'buyer' ? ' active' : '');
+    document.getElementById('btn-seller').className = 'role-toggle-btn' + (role === 'seller' ? ' active' : '');
+    if (role === 'seller') showView('seller-dash');
+    else showView('buyer-dash');
+  }
+
+  // ---- PAYMENT MODALS ----
+  function openPaymentModal() {
+    // Reset to step 1
+    document.getElementById('pay-panel-1').style.display = 'block';
+    document.getElementById('pay-panel-2').style.display = 'none';
+    document.getElementById('pay-step-1').style.borderBottomColor = '#a855f7';
+    document.getElementById('pay-step-1').style.color = '#a855f7';
+    document.getElementById('pay-step-2').style.borderBottomColor = 'var(--border)';
+    document.getElementById('pay-step-2').style.color = 'var(--text-muted)';
+    document.getElementById('payment-modal').classList.add('open');
+  }
+
+  function advancePaymentStep() {
+    document.getElementById('pay-panel-1').style.display = 'none';
+    document.getElementById('pay-panel-2').style.display = 'block';
+    document.getElementById('pay-step-1').style.borderBottomColor = 'var(--green)';
+    document.getElementById('pay-step-1').style.color = 'var(--green)';
+    document.getElementById('pay-step-2').style.borderBottomColor = '#3498db';
+    document.getElementById('pay-step-2').style.color = '#3498db';
+    toast('💳 Payment notification sent to PowerEdge Limited — they will verify and confirm receipt');
+  }
+
+  function confirmPaymentReceived() {
+    toast('✅ Payment confirmed by you — Order Acknowledgment WM-OA-2026-0088 is being generated and sent to buyer');
+    setTimeout(() => toast('📋 OA issued — buyer notified. You may now prepare the order for dispatch.'), 1800);
+  }
+
+  // ---- TABS ----
+  function switchTab(el, tabId) {
+    el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    ['orders', 'credit', 'rfds', 'quotes'].forEach(id => {
+      const el = document.getElementById('tab-' + id);
+      if (el) el.style.display = id === tabId ? 'block' : 'none';
+    });
+  }
+  function switchTabSeller(el, tabId) {
+    el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    ['seller-pos', 'seller-rfds', 'seller-credit', 'seller-inventory'].forEach(id => {
+      const el = document.getElementById('tab-' + id);
+      if (el) el.style.display = id === tabId ? 'block' : 'none';
+    });
+  }
+
+  // ---- FILTER ----
+  function filterCat(el) {
+    el.parentElement.querySelectorAll('.filter-item').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+    toast('Filtering products...');
+  }
+
+  // ---- CART ----
+  let cartCount = 3;
+  function addToCart() {
+    cartCount++;
+    document.getElementById('cart-count').textContent = cartCount;
+    toast('✅ Product added to cart');
+  }
+
+  function updateQty(btn, delta) {
+    const numEl = btn.parentElement.querySelector('.qty-num');
+    let val = parseInt(numEl.textContent) + delta;
+    if (val < 1) val = 1;
+    numEl.textContent = val;
+  }
+
+  // ---- MODALS ----
+  function openPO() { document.getElementById('po-modal').classList.add('open'); }
+  function openRFD() { document.getElementById('rfd-modal').classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function openProduct() { toast('Opening product detail page...'); }
+
+  // ---- PLACE PO ----
+  function placePO() {
+    toast('⚙️ Generating 3 Purchase Orders...');
+    setTimeout(() => { toast('✅ POs generated: WM-PO-2026-0092, -0093, -0094 — transmitted to sellers'); openPO(); }, 1200);
+  }
+
+  // ---- RFQ ----
+  function selectOption(el) {
+    const group = el.closest('.quote-options').querySelectorAll('.quote-option');
+    group.forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input[type=radio]').checked = true;
+  }
+  function rfqAddToCart() {
+    toast('✅ 3 items added to cart from RFQ — redirecting to cart');
+    setTimeout(() => showView('cart'), 800);
+  }
+
+  function submitRFD() {
+    closeModal('rfd-modal');
+    toast('💬 RFD submitted to SolarSync Nigeria — you\'ll be notified of their decision');
+  }
+
+  function showCreditRequest() {
+    toast('Credit request form opened — select a seller to request credit from');
+  }
+
+  // ---- TOAST ----
+  function toast(msg, type = '') {
+    const container = document.getElementById('toasts');
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = msg;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+</script>
+</body>
+</html>
